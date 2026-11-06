@@ -1,0 +1,21 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+coverage/
+
+# Environment files - protect all secrets
+.env*
+!.env.example
+
+# Logs and editor files
+*.log
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Runtime uploads (keep the directory itself if introduced later)
+uploads/*
+!uploads/.gitkeep

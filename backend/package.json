@@ -1,0 +1,28 @@
+{
+  "name": "smart-agriculture-backend",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "main": "src/server.js",
+  "scripts": {
+    "dev": "nodemon src/server.js",
+    "start": "node src/server.js",
+    "seed:products": "node src/seed/products.seed.js",
+    "seed:crops": "node src/seed/crops.seed.js",
+    "seed:problems": "node src/seed/problems.seed.js",
+    "seed:application-methods": "node src/seed/applicationMethods.seed.js",
+    "seed:admin": "node src/seed/admin.seed.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^8.9.1",
+    "multer": "^2.5.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.7"
+  }
+}
