@@ -17,10 +17,18 @@ dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 5000;
-const configuredOrigins = (process.env.CLIENT_ORIGIN || '')
-  .split(',')
-  .map((origin) => origin.trim())
+const configuredOrigins = [
+  ...(process.env.CLIENT_ORIGIN || '').split(','),
+  ...(process.env.FRONTEND_URL || '').split(','),
+  ...(process.env.CORS_ORIGIN || '').split(','),
+]
+  .map((origin) => origin.trim().replace(/\/+$/, ''))
   .filter(Boolean);
+
+const defaultProductionOrigins = new Set([
+  'https://himalaya-farmcare.vercel.app',
+]);
+
 const developmentOrigins = new Set([
   'http://localhost:5173',
   'http://localhost:5174',
@@ -31,15 +39,40 @@ const developmentOrigins = new Set([
 ]);
 
 function isAllowedOrigin(origin) {
-  return configuredOrigins.includes(origin) || developmentOrigins.has(origin);
+  if (!origin) return true;
+  const cleanOrigin = origin.trim().replace(/\/+$/, '');
+  if (configuredOrigins.includes(cleanOrigin)) return true;
+  if (defaultProductionOrigins.has(cleanOrigin)) return true;
+  if (developmentOrigins.has(cleanOrigin)) return true;
+  // Allow any Vercel deployment preview / sub-branch domain
+  if (/^https:\/\/[a-zA-Z0-9_-]+\.vercel\.app$/.test(cleanOrigin)) return true;
+  return false;
 }
 
-app.use(cors({
+const corsOptions = {
   origin(origin, callback) {
-    if (!origin || isAllowedOrigin(origin)) return callback(null, true);
-    return callback(new Error('CORS origin is not allowed.'));
+    if (isAllowedOrigin(origin)) {
+      return callback(null, true);
+    }
+    console.warn(`[CORS] Rejected request from unauthorized origin: "${origin}"`);
+    return callback(null, false);
   },
-}));
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: [
+    'Content-Type',
+    'Authorization',
+    'X-Requested-With',
+    'Accept',
+    'Origin',
+  ],
+  exposedHeaders: ['Content-Disposition'],
+  optionsSuccessStatus: 204,
+  maxAge: 86400,
+};
+
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 app.use(express.json());
 
 // Serve uploaded assets statically
@@ -66,8 +99,8 @@ app.get('/api/health', (_request, response) => {
 async function startServer() {
   try {
     await connectDatabase();
-    app.listen(port, () => {
-      console.log(`API server listening on port ${port}`);
+    app.listen(port, '0.0.0.0', () => {
+      console.log(`API server listening on port ${port} (bound to 0.0.0.0)`);
     });
   } catch (error) {
     console.error(`API server was not started because the database is unavailable: ${error.message}`);

@@ -1,6 +1,5 @@
+import { apiBaseUrl, fetchWithTimeout } from './apiClient';
 import { getStoredToken } from './authService';
-
-const apiBaseUrl = (import.meta.env.VITE_API_URL || 'http://localhost:5000/api').replace(/\/$/, '');
 
 function authHeaders(token) {
   const activeToken = token || getStoredToken();
@@ -21,7 +20,7 @@ async function handleResponse(response, defaultErrorMsg) {
 
 // ---------------- Admin Statistics ----------------
 export async function getAdminStats(token) {
-  const response = await fetch(`${apiBaseUrl}/admin/stats`, {
+  const response = await fetchWithTimeout(`${apiBaseUrl}/admin/stats`, {
     headers: authHeaders(token),
   });
   return handleResponse(response, 'Failed to fetch dashboard statistics.');
@@ -35,14 +34,14 @@ export async function getAdminUsers(query = {}, token) {
       searchParams.set(key, val);
     }
   });
-  const response = await fetch(`${apiBaseUrl}/admin/users?${searchParams}`, {
+  const response = await fetchWithTimeout(`${apiBaseUrl}/admin/users?${searchParams}`, {
     headers: authHeaders(token),
   });
   return handleResponse(response, 'Failed to fetch users list.');
 }
 
 export async function updateUserStatus(userId, status, token) {
-  const response = await fetch(`${apiBaseUrl}/admin/users/${encodeURIComponent(userId)}/status`, {
+  const response = await fetchWithTimeout(`${apiBaseUrl}/admin/users/${encodeURIComponent(userId)}/status`, {
     method: 'PATCH',
     headers: authHeaders(token),
     body: JSON.stringify({ status }),
@@ -59,14 +58,14 @@ export async function adminGetProducts(query = {}, token) {
       searchParams.set(key, val);
     }
   });
-  const response = await fetch(`${apiBaseUrl}/products?${searchParams}`, {
+  const response = await fetchWithTimeout(`${apiBaseUrl}/products?${searchParams}`, {
     headers: authHeaders(token),
   });
   return handleResponse(response, 'Failed to fetch products.');
 }
 
 export async function adminCreateProduct(productData, token) {
-  const response = await fetch(`${apiBaseUrl}/products`, {
+  const response = await fetchWithTimeout(`${apiBaseUrl}/products`, {
     method: 'POST',
     headers: authHeaders(token),
     body: JSON.stringify(productData),
@@ -75,7 +74,7 @@ export async function adminCreateProduct(productData, token) {
 }
 
 export async function adminUpdateProduct(id, productData, token) {
-  const response = await fetch(`${apiBaseUrl}/products/${encodeURIComponent(id)}`, {
+  const response = await fetchWithTimeout(`${apiBaseUrl}/products/${encodeURIComponent(id)}`, {
     method: 'PUT',
     headers: authHeaders(token),
     body: JSON.stringify(productData),
@@ -84,7 +83,7 @@ export async function adminUpdateProduct(id, productData, token) {
 }
 
 export async function adminDeleteProduct(id, token) {
-  const response = await fetch(`${apiBaseUrl}/products/${encodeURIComponent(id)}`, {
+  const response = await fetchWithTimeout(`${apiBaseUrl}/products/${encodeURIComponent(id)}`, {
     method: 'DELETE',
     headers: authHeaders(token),
   });
@@ -96,7 +95,7 @@ export async function adminUploadProductImage(file, token) {
   const formData = new FormData();
   formData.append('image', file);
 
-  const response = await fetch(`${apiBaseUrl}/products/upload-image`, {
+  const response = await fetchWithTimeout(`${apiBaseUrl}/products/upload-image`, {
     method: 'POST',
     headers: activeToken ? { Authorization: `Bearer ${activeToken}` } : {},
     body: formData,
@@ -109,7 +108,7 @@ export async function adminReplaceProductImage(productId, file, token) {
   const formData = new FormData();
   formData.append('image', file);
 
-  const response = await fetch(`${apiBaseUrl}/products/${encodeURIComponent(productId)}/image`, {
+  const response = await fetchWithTimeout(`${apiBaseUrl}/products/${encodeURIComponent(productId)}/image`, {
     method: 'PUT',
     headers: activeToken ? { Authorization: `Bearer ${activeToken}` } : {},
     body: formData,
@@ -118,7 +117,7 @@ export async function adminReplaceProductImage(productId, file, token) {
 }
 
 export async function adminRemoveProductImage(productId, token) {
-  const response = await fetch(`${apiBaseUrl}/products/${encodeURIComponent(productId)}/image`, {
+  const response = await fetchWithTimeout(`${apiBaseUrl}/products/${encodeURIComponent(productId)}/image`, {
     method: 'DELETE',
     headers: authHeaders(token),
   });

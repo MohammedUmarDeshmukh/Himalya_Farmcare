@@ -12,8 +12,12 @@ export async function connectDatabase() {
 
   try {
     // Atlas SRV connection strings require DNS SRV/TXT lookups. Use public
-    // resolvers before Mongoose initiates those lookups.
-    dns.setServers(publicDnsServers);
+    // resolvers before Mongoose initiates those lookups if allowed by host.
+    try {
+      dns.setServers(publicDnsServers);
+    } catch {
+      // Cloud container systems using internal DNS fallback gracefully
+    }
     await mongoose.connect(mongoUri);
     console.log(`MongoDB connected: ${mongoose.connection.host}`);
   } catch (error) {

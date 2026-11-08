@@ -52,7 +52,26 @@ export default function Login() {
 
           {activeError && (
             <div className="auth-alert error" role="alert">
-              <strong>Login Error:</strong> {activeError}
+              <div><strong>Login Error:</strong> {activeError}</div>
+              <button
+                type="button"
+                className="btn-retry-auth"
+                onClick={handleSubmit}
+                disabled={isSubmitting}
+                style={{
+                  marginTop: '8px',
+                  padding: '6px 12px',
+                  background: '#ef4444',
+                  color: '#ffffff',
+                  border: 'none',
+                  borderRadius: '6px',
+                  cursor: 'pointer',
+                  fontSize: '12px',
+                  fontWeight: '600'
+                }}
+              >
+                Retry Sign In 🔄
+              </button>
             </div>
           )}
 

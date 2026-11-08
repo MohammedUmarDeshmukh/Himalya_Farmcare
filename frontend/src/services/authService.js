@@ -1,4 +1,4 @@
-const apiBaseUrl = (import.meta.env.VITE_API_URL || 'http://localhost:5000/api').replace(/\/$/, '');
+import { apiBaseUrl, fetchWithTimeout } from './apiClient';
 
 const TOKEN_KEY = 'himalaya_auth_token';
 const USER_KEY = 'himalaya_auth_user';
@@ -61,7 +61,7 @@ export function clearStoredUser() {
 }
 
 export async function register(userData) {
-  const response = await fetch(`${apiBaseUrl}/auth/register`, {
+  const response = await fetchWithTimeout(`${apiBaseUrl}/auth/register`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(userData),
@@ -77,7 +77,7 @@ export async function register(userData) {
 }
 
 export async function login(credentials) {
-  const response = await fetch(`${apiBaseUrl}/auth/login`, {
+  const response = await fetchWithTimeout(`${apiBaseUrl}/auth/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(credentials),
@@ -97,7 +97,7 @@ export async function getMe(token) {
     throw new Error('No authentication token available.');
   }
 
-  const response = await fetch(`${apiBaseUrl}/auth/me`, {
+  const response = await fetchWithTimeout(`${apiBaseUrl}/auth/me`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -115,7 +115,7 @@ export async function getMe(token) {
 
 export async function updateProfile(profileData, token) {
   const authToken = token || getStoredToken();
-  const response = await fetch(`${apiBaseUrl}/auth/profile`, {
+  const response = await fetchWithTimeout(`${apiBaseUrl}/auth/profile`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -133,7 +133,7 @@ export async function updateProfile(profileData, token) {
 
 export async function addSavedAddress(addressData, token) {
   const authToken = token || getStoredToken();
-  const response = await fetch(`${apiBaseUrl}/auth/addresses`, {
+  const response = await fetchWithTimeout(`${apiBaseUrl}/auth/addresses`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -152,7 +152,7 @@ export async function addSavedAddress(addressData, token) {
 
 export async function updateSavedAddress(addressId, addressData, token) {
   const authToken = token || getStoredToken();
-  const response = await fetch(`${apiBaseUrl}/auth/addresses/${encodeURIComponent(addressId)}`, {
+  const response = await fetchWithTimeout(`${apiBaseUrl}/auth/addresses/${encodeURIComponent(addressId)}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -170,7 +170,7 @@ export async function updateSavedAddress(addressId, addressData, token) {
 
 export async function deleteSavedAddress(addressId, token) {
   const authToken = token || getStoredToken();
-  const response = await fetch(`${apiBaseUrl}/auth/addresses/${encodeURIComponent(addressId)}`, {
+  const response = await fetchWithTimeout(`${apiBaseUrl}/auth/addresses/${encodeURIComponent(addressId)}`, {
     method: 'DELETE',
     headers: {
       'Content-Type': 'application/json',
@@ -187,7 +187,7 @@ export async function deleteSavedAddress(addressId, token) {
 
 export async function setDefaultSavedAddress(addressId, token) {
   const authToken = token || getStoredToken();
-  const response = await fetch(`${apiBaseUrl}/auth/addresses/${encodeURIComponent(addressId)}/default`, {
+  const response = await fetchWithTimeout(`${apiBaseUrl}/auth/addresses/${encodeURIComponent(addressId)}/default`, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',

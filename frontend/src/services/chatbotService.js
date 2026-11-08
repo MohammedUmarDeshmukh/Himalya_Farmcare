@@ -1,4 +1,4 @@
-const apiBaseUrl = (import.meta.env.VITE_API_URL || 'http://localhost:5000/api').replace(/\/$/, '');
+import { apiBaseUrl, fetchWithTimeout } from './apiClient';
 
 /**
  * Sends a message to the Himalaya FarmCare AI Assistant.
@@ -12,7 +12,7 @@ export async function sendChatMessage(message, context = []) {
     throw new Error('Please enter a question or message.');
   }
 
-  const response = await fetch(`${apiBaseUrl}/chatbot/message`, {
+  const response = await fetchWithTimeout(`${apiBaseUrl}/chatbot/message`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -21,7 +21,7 @@ export async function sendChatMessage(message, context = []) {
       message: message.trim(),
       context: context.slice(-6),
     }),
-  });
+  }, 30000);
 
   const payload = await response.json().catch(() => ({}));
 

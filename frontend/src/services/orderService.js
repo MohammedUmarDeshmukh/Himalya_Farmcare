@@ -1,6 +1,5 @@
+import { apiBaseUrl, fetchWithTimeout } from './apiClient';
 import { getStoredToken } from './authService';
-
-const apiBaseUrl = (import.meta.env.VITE_API_URL || 'http://localhost:5000/api').replace(/\/$/, '');
 
 function authHeaders(token) {
   const activeToken = token || getStoredToken();
@@ -22,7 +21,7 @@ async function handleResponse(response, defaultErrorMsg) {
 // ---------------- Farmer Order Actions ----------------
 
 export async function createOrder(orderData, token) {
-  const response = await fetch(`${apiBaseUrl}/orders`, {
+  const response = await fetchWithTimeout(`${apiBaseUrl}/orders`, {
     method: 'POST',
     headers: authHeaders(token),
     body: JSON.stringify(orderData),
@@ -37,21 +36,21 @@ export async function getMyOrders(query = {}, token) {
       searchParams.set(key, val);
     }
   });
-  const response = await fetch(`${apiBaseUrl}/orders/my-orders?${searchParams}`, {
+  const response = await fetchWithTimeout(`${apiBaseUrl}/orders/my-orders?${searchParams}`, {
     headers: authHeaders(token),
   });
   return handleResponse(response, 'Failed to fetch order history.');
 }
 
 export async function getOrderById(orderId, token) {
-  const response = await fetch(`${apiBaseUrl}/orders/${encodeURIComponent(orderId)}`, {
+  const response = await fetchWithTimeout(`${apiBaseUrl}/orders/${encodeURIComponent(orderId)}`, {
     headers: authHeaders(token),
   });
   return handleResponse(response, 'Failed to fetch order details.');
 }
 
 export async function cancelMyOrder(orderId, token) {
-  const response = await fetch(`${apiBaseUrl}/orders/${encodeURIComponent(orderId)}/cancel`, {
+  const response = await fetchWithTimeout(`${apiBaseUrl}/orders/${encodeURIComponent(orderId)}/cancel`, {
     method: 'PATCH',
     headers: authHeaders(token),
   });
@@ -67,14 +66,14 @@ export async function getAdminOrders(query = {}, token) {
       searchParams.set(key, val);
     }
   });
-  const response = await fetch(`${apiBaseUrl}/orders/admin/all?${searchParams}`, {
+  const response = await fetchWithTimeout(`${apiBaseUrl}/orders/admin/all?${searchParams}`, {
     headers: authHeaders(token),
   });
   return handleResponse(response, 'Failed to fetch customer orders.');
 }
 
 export async function adminUpdateOrderStatus(orderId, status, token) {
-  const response = await fetch(`${apiBaseUrl}/orders/${encodeURIComponent(orderId)}/status`, {
+  const response = await fetchWithTimeout(`${apiBaseUrl}/orders/${encodeURIComponent(orderId)}/status`, {
     method: 'PATCH',
     headers: authHeaders(token),
     body: JSON.stringify({ status }),
@@ -90,7 +89,7 @@ export async function adminExportOrdersCSV(query = {}, token) {
     }
   });
 
-  const response = await fetch(`${apiBaseUrl}/orders/admin/export?${searchParams}`, {
+  const response = await fetchWithTimeout(`${apiBaseUrl}/orders/admin/export?${searchParams}`, {
     headers: authHeaders(token),
   });
 
